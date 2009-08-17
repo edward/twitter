@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby -wKU
+
+# Usage:
+# 
+#   $ echo "This is a hack if I’ve ever seen one" | ./twitter
+
+USERNAME = "crazy_ivan_test"
+PASSWORD = "asdfasdf"
+
+message = STDIN.read.chomp[0..140]
+
+result = `curl --basic --user #{USERNAME}:#{PASSWORD} --data status="#{message}" --silent --write-out "%{http_code}" http://twitter.com/statuses/update.xml`
+
+if result.split("\n").last == "200"
+  exit(1)
+else
+  STDERR.puts result[/\<error\>(.+?)\<\/error\>/, 1]
+  exit(0)
+end
